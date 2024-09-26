@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Sequantum</title>
+    <style>
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #0a0a0a;
+            --background-color: #000000;
+            --text-color: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+        header, footer {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 1rem;
+        }
+        section {
+            padding: 2rem;
+        }
+        .stat-item {
+            margin: 1rem 0;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            background-color: rgba(10, 10, 10, 0.6);
+            color: var(--text-color);
+        }
+        .project-list, .tool-list, .contact-list {
+            margin-top: 1rem;
+            background-color: rgba(10, 10, 10, 0.8);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .tool-item, .project-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+    </header>
+
+    <section>
+        <h2>Website Stats</h2>
+        <div class="stat-item">
+            <label>Website Viewers Count:</label>
+            <input type="number" id="viewersCount" class="form-input" value="0">
+        </div>
+        <div class="stat-item">
+            <label>Years of Experience:</label>
+            <input type="text" id="yearsExperience" class="form-input" value="0 years">
+        </div>
+        <button class="btn" onclick="updateStats()">Update Stats</button>
+    </section>
+
+    <section>
+        <h2>Add Tool</h2>
+        <input type="text" id="toolName" class="form-input" placeholder="Tool Name">
+        <input type="text" id="toolImage" class="form-input" placeholder="Tool Image URL">
+        <button class="btn" onclick="addTool()">Add Tool</button>
+        <div class="tool-list" id="toolList"></div>
+    </section>
+
+    <section>
+        <h2>User Contact Submissions</h2>
+        <div class="contact-list" id="contactSubmissions"></div>
+    </section>
+
+    <section>
+        <h2>Add Project</h2>
+        <input type="text" id="projectName" class="form-input" placeholder="Project Name">
+        <textarea id="projectDescription" class="form-input" placeholder="Project Description"></textarea>
+        <input type="text" id="projectImage" class="form-input" placeholder="Project Image URL">
+        <button class="btn" onclick="addProject()">Add Project</button>
+        <div class="project-list" id="projectList"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Sequantum. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Initialize tools, submissions, and projects from local storage
+        let tools = JSON.parse(localStorage.getItem('tools')) || [];
+        let submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+        let projects = JSON.parse(localStorage.getItem('projects')) || [];
+
+        function updateStats() {
+            const viewers = document.getElementById('viewersCount').value;
+            const years = document.getElementById('yearsExperience').value;
+            alert(`Stats updated: ${viewers} viewers, ${years} experience`);
+            // Save stats to local storage if needed
+        }
+
+        function addTool() {
+            const toolName = document.getElementById('toolName').value;
+            const toolImage = document.getElementById('toolImage').value;
+            if (toolName && toolImage) {
+                tools.push({ name: toolName, image: toolImage });
+                localStorage.setItem('tools', JSON.stringify(tools)); // Save to local storage
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolImage').value = '';
+                displayTools();
+                alert(`Tool added: ${toolName}`);
+            }
+        }
+
+        function addProject() {
+            const projectName = document.getElementById('projectName').value;
+            const projectDescription = document.getElementById('projectDescription').value;
+            const projectImage = document.getElementById('projectImage').value;
+            if (projectName && projectDescription && projectImage) {
+                projects.push({ name: projectName, description: projectDescription, image: projectImage });
+                localStorage.setItem('projects', JSON.stringify(projects)); // Save to local storage
+                document.getElementById('projectName').value = '';
+                document.getElementById('projectDescription').value = '';
+                document.getElementById('projectImage').value = '';
+                displayProjects();
+                alert(`Project added: ${projectName}`);
+            }
+        }
+
+        function displayTools() {
+            const toolList = document.getElementById('toolList');
+            toolList.innerHTML = tools.map(tool => `<div class="tool-item">${tool.name} <img src="${tool.image}" alt="${tool.name}" width="50" /></div>`).join('');
+        }
+
+        function displayProjects() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = projects.map(project => `<div class="project-item">${project.name} - ${project.description} <img src="${project.image}" alt="${project.name}" width="100" /></div>`).join('');
+        }
+
+        function showContactSubmissions() {
+            const contactDiv = document.getElementById('contactSubmissions');
+            contactDiv.innerHTML = submissions.map(sub => `<p>${sub.name}: ${sub.message}</p>`).join('');
+        }
+
+        function simulateSubmission() {
+            submissions.push({ name: 'John Doe', message: 'Hello, I would like to know more about your services.' });
+            localStorage.setItem('submissions', JSON.stringify(submissions)); // Save to local storage
+            showContactSubmissions();
+        }
+
+        // Load the data on page load
+        displayTools();
+        displayProjects();
+        showContactSubmissions();
+        simulateSubmission(); // Simulate a submission for demo purposes
+    </script>
+</body>
+</html>
